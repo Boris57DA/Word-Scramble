@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Word_Scramble
@@ -15,7 +16,8 @@ namespace Word_Scramble
         private int attempts = 0;
         private int guessedWords = 0;
         private string currentWord = string.Empty;
-                
+        private int revealedHintLetters = 0;
+
         public IndexForm()
         {
             InitializeComponent();
@@ -35,17 +37,61 @@ namespace Word_Scramble
 
         private void ButtonSkipClick(object sender, EventArgs e)
         {
+            MessageBox.Show($"Правилната дума беше: {currentWord.ToUpper()}", "Пропусната дума", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             GenerateNewWord();
             UpdateLabels();
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ButtonHintClick(sender, e);
+        }
+
+        private void ButtonHintClick(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(currentWord)) return;
+
+            if (revealedHintLetters < currentWord.Length)
+            {
+                revealedHintLetters++;
+            }
+
+            string hintDisplay = "Подсказка: ";
+
+            for (int i = 0; i < currentWord.Length; i++)
+            {
+                if (i < revealedHintLetters)
+                {
+                    hintDisplay += currentWord[i].ToString().ToUpper() + " ";
+                }
+                else
+                {
+                    hintDisplay += "_ ";
+                }
+            }
+
+            this.labelHintDisplay.Text = hintDisplay.Trim();
+        }
+
         private void GetAllWords()
         {
+            if (!File.Exists(wordsTextFile))
+            {
+                MessageBox.Show("Файлът words.txt не беше намерен!", "Грешка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             using (StreamReader reader = new(wordsTextFile))
             {
                 while (!reader.EndOfStream)
                 {
-                    wordList.Add(reader.ReadLine());
+                    string line = reader.ReadLine()?.Trim();
+
+                    if (!string.IsNullOrEmpty(line) && line.Length == 5)
+                    {
+                        wordList.Add(line);
+                    }
                 }
             }
         }
@@ -63,9 +109,11 @@ namespace Word_Scramble
             }
             else
             {
-                this.labelScrambledWord.Text = "YOU WIN!";
+                this.labelScrambledWord.Text = "ТИ СПЕЧЕЛИ!";
                 this.textBoxInput.Enabled = false;
                 this.buttonCheck.Enabled = false;
+                this.buttonSkip.Enabled = false;
+                this.button1.Enabled = false;
             }
         }
 
@@ -73,6 +121,12 @@ namespace Word_Scramble
         {
             attempts = 0;
             failedAttempts.Clear();
+            revealedHintLetters = 0;
+
+            if (this.labelHintDisplay != null)
+            {
+                this.labelHintDisplay.Text = string.Empty;
+            }
 
             this.labelScrambledWord.Text = ScrambleWord(currentWord);
         }
@@ -93,17 +147,25 @@ namespace Word_Scramble
             return new string(chars);
         }
 
-        private void CheckTheWord()
+        private async void CheckTheWord()
         {
             string input = this.textBoxInput.Text.Trim();
 
             if (string.Equals(currentWord, input, StringComparison.OrdinalIgnoreCase))
             {
+
                 guessedWords++;
                 this.labelGuessedWordsValue.Text = guessedWords.ToString();
 
                 wordList.Remove(currentWord);
                 GenerateNewWord();
+
+                System.Drawing.Color originalColor = this.BackColor;
+                this.BackColor = System.Drawing.Color.LightGreen;
+
+                await Task.Delay(250);
+
+                this.BackColor = originalColor;
             }
             else if (!string.IsNullOrEmpty(input))
             {
@@ -112,6 +174,7 @@ namespace Word_Scramble
 
                 if (attempts > 9)
                 {
+                    MessageBox.Show($"Изчерпа всички опити! Правилната дума беше: {currentWord.ToUpper()}", "Край на играта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     GenerateNewWord();
                 }
             }
@@ -122,6 +185,14 @@ namespace Word_Scramble
             this.textBoxFailedAttempts.Text = string.Join(", ", failedAttempts);
             this.labelAttemptsCount.Text = attempts.ToString();
             this.textBoxInput.Text = string.Empty;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void textBoxInput_TextChanged(object sender, EventArgs e)
+        {
         }
     }
 }

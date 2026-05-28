@@ -28,6 +28,8 @@
             buttonSkip = new Button();
             labelFailedAttempts = new Label();
             textBoxFailedAttempts = new TextBox();
+            button1 = new Button();
+            labelHintDisplay = new Label();
             SuspendLayout();
             // 
             // labelWordScramble
@@ -35,7 +37,7 @@
             labelWordScramble.Anchor = AnchorStyles.Top;
             labelWordScramble.AutoSize = true;
             labelWordScramble.Font = new Font("Georgia", 24F, FontStyle.Bold);
-            labelWordScramble.Location = new Point(96, 40);
+            labelWordScramble.Location = new Point(86, 9);
             labelWordScramble.Name = "labelWordScramble";
             labelWordScramble.Size = new Size(344, 46);
             labelWordScramble.TabIndex = 0;
@@ -45,7 +47,7 @@
             // 
             labelAttempts.AutoSize = true;
             labelAttempts.Font = new Font("Segoe UI", 12F);
-            labelAttempts.Location = new Point(57, 122);
+            labelAttempts.Location = new Point(57, 74);
             labelAttempts.Name = "labelAttempts";
             labelAttempts.Size = new Size(97, 28);
             labelAttempts.TabIndex = 0;
@@ -57,7 +59,7 @@
             labelAttemptsCount.BackColor = Color.DarkSeaGreen;
             labelAttemptsCount.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             labelAttemptsCount.ForeColor = Color.Cornsilk;
-            labelAttemptsCount.Location = new Point(154, 122);
+            labelAttemptsCount.Location = new Point(154, 74);
             labelAttemptsCount.Name = "labelAttemptsCount";
             labelAttemptsCount.Padding = new Padding(5, 2, 5, 2);
             labelAttemptsCount.Size = new Size(34, 32);
@@ -68,7 +70,7 @@
             // 
             labelGuessedWords.AutoSize = true;
             labelGuessedWords.Font = new Font("Segoe UI", 12F);
-            labelGuessedWords.Location = new Point(293, 126);
+            labelGuessedWords.Location = new Point(283, 78);
             labelGuessedWords.Name = "labelGuessedWords";
             labelGuessedWords.Size = new Size(147, 28);
             labelGuessedWords.TabIndex = 0;
@@ -80,7 +82,7 @@
             labelGuessedWordsValue.BackColor = Color.DarkSeaGreen;
             labelGuessedWordsValue.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             labelGuessedWordsValue.ForeColor = Color.Cornsilk;
-            labelGuessedWordsValue.Location = new Point(436, 126);
+            labelGuessedWordsValue.Location = new Point(426, 78);
             labelGuessedWordsValue.Name = "labelGuessedWordsValue";
             labelGuessedWordsValue.Padding = new Padding(5, 2, 5, 2);
             labelGuessedWordsValue.Size = new Size(34, 32);
@@ -92,11 +94,11 @@
             labelScrambledWord.Anchor = AnchorStyles.Top;
             labelScrambledWord.AutoSize = true;
             labelScrambledWord.Font = new Font("Georgia", 18F, FontStyle.Italic);
-            labelScrambledWord.Location = new Point(154, 205);
+            labelScrambledWord.Location = new Point(209, 128);
             labelScrambledWord.Name = "labelScrambledWord";
-            labelScrambledWord.Size = new Size(235, 35);
+            labelScrambledWord.Size = new Size(104, 35);
             labelScrambledWord.TabIndex = 0;
-            labelScrambledWord.Text = "scrambled word";
+            labelScrambledWord.Text = "Words";
             // 
             // textBoxInput
             // 
@@ -104,12 +106,13 @@
             textBoxInput.BorderStyle = BorderStyle.FixedSingle;
             textBoxInput.Font = new Font("Segoe UI", 14F);
             textBoxInput.ForeColor = Color.Black;
-            textBoxInput.Location = new Point(74, 267);
+            textBoxInput.Location = new Point(120, 182);
             textBoxInput.Margin = new Padding(3, 4, 3, 4);
             textBoxInput.Name = "textBoxInput";
-            textBoxInput.Size = new Size(148, 39);
+            textBoxInput.Size = new Size(246, 39);
             textBoxInput.TabIndex = 1;
             textBoxInput.TextAlign = HorizontalAlignment.Center;
+            textBoxInput.TextChanged += textBoxInput_TextChanged;
             // 
             // buttonCheck
             // 
@@ -120,10 +123,10 @@
             buttonCheck.FlatStyle = FlatStyle.Flat;
             buttonCheck.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             buttonCheck.ForeColor = Color.Cornsilk;
-            buttonCheck.Location = new Point(234, 267);
+            buttonCheck.Location = new Point(86, 242);
             buttonCheck.Margin = new Padding(3, 4, 3, 4);
             buttonCheck.Name = "buttonCheck";
-            buttonCheck.Size = new Size(97, 44);
+            buttonCheck.Size = new Size(105, 44);
             buttonCheck.TabIndex = 3;
             buttonCheck.Text = "Check";
             buttonCheck.UseVisualStyleBackColor = false;
@@ -138,7 +141,7 @@
             buttonSkip.FlatStyle = FlatStyle.Flat;
             buttonSkip.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             buttonSkip.ForeColor = SystemColors.Window;
-            buttonSkip.Location = new Point(343, 267);
+            buttonSkip.Location = new Point(197, 242);
             buttonSkip.Margin = new Padding(3, 4, 3, 4);
             buttonSkip.Name = "buttonSkip";
             buttonSkip.Size = new Size(97, 44);
@@ -171,12 +174,40 @@
             textBoxFailedAttempts.Size = new Size(399, 79);
             textBoxFailedAttempts.TabIndex = 2;
             // 
+            // button1
+            // 
+            button1.BackColor = Color.Orange;
+            button1.Cursor = Cursors.Hand;
+            button1.FlatAppearance.BorderSize = 0;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            button1.ForeColor = Color.Azure;
+            button1.Location = new Point(300, 242);
+            button1.Name = "button1";
+            button1.Size = new Size(113, 45);
+            button1.TabIndex = 5;
+            button1.Text = "Hint";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click;
+            // 
+            // labelHintDisplay
+            // 
+            labelHintDisplay.AutoSize = true;
+            labelHintDisplay.Location = new Point(183, 303);
+            labelHintDisplay.Name = "labelHintDisplay";
+            labelHintDisplay.Size = new Size(50, 20);
+            labelHintDisplay.TabIndex = 6;
+            labelHintDisplay.Text = "label1";
+            labelHintDisplay.Click += label1_Click;
+            // 
             // IndexForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Cornsilk;
-            ClientSize = new Size(514, 533);
+            ClientSize = new Size(494, 512);
+            Controls.Add(labelHintDisplay);
+            Controls.Add(button1);
             Controls.Add(textBoxFailedAttempts);
             Controls.Add(labelFailedAttempts);
             Controls.Add(buttonSkip);
@@ -211,5 +242,7 @@
         private System.Windows.Forms.Button buttonSkip;
         private System.Windows.Forms.Label labelFailedAttempts;
         private System.Windows.Forms.TextBox textBoxFailedAttempts;
+        private Button button1;
+        private Label labelHintDisplay;
     }
 }
