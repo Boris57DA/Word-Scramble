@@ -15,7 +15,7 @@ namespace Word_Scramble
         private int attempts = 0;
         private int guessedWords = 0;
         private string currentWord = string.Empty;
-
+                
         public IndexForm()
         {
             InitializeComponent();
