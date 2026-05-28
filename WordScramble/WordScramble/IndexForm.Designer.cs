@@ -30,6 +30,7 @@
             textBoxFailedAttempts = new TextBox();
             button1 = new Button();
             labelHintDisplay = new Label();
+            label1 = new Label();
             SuspendLayout();
             // 
             // labelWordScramble
@@ -200,12 +201,23 @@
             labelHintDisplay.Text = "label1";
             labelHintDisplay.Click += label1_Click;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(218, 55);
+            label1.Name = "label1";
+            label1.Size = new Size(40, 20);
+            label1.TabIndex = 7;
+            label1.Text = "level";
+            label1.Click += label1_Click_1;
+            // 
             // IndexForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Cornsilk;
             ClientSize = new Size(494, 512);
+            Controls.Add(label1);
             Controls.Add(labelHintDisplay);
             Controls.Add(button1);
             Controls.Add(textBoxFailedAttempts);
@@ -244,5 +256,6 @@
         private System.Windows.Forms.TextBox textBoxFailedAttempts;
         private Button button1;
         private Label labelHintDisplay;
+        private Label label1;
     }
 }

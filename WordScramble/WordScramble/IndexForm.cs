@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,8 +16,11 @@ namespace Word_Scramble
 
         private int attempts = 0;
         private int guessedWords = 0;
+        private int currentLevel = 1;
         private string currentWord = string.Empty;
         private int revealedHintLetters = 0;
+
+        private CancellationTokenSource hintTimerCts;
 
         public IndexForm()
         {
@@ -29,9 +33,9 @@ namespace Word_Scramble
             GenerateNewWord();
         }
 
-        private void ButtonCheckClick(object sender, EventArgs e)
+        private async void ButtonCheckClick(object sender, EventArgs e)
         {
-            CheckTheWord();
+            await CheckTheWord();
             UpdateLabels();
         }
 
@@ -51,6 +55,8 @@ namespace Word_Scramble
         private void ButtonHintClick(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(currentWord)) return;
+
+            CancelActiveHintTimer();
 
             if (revealedHintLetters < currentWord.Length)
             {
@@ -123,6 +129,8 @@ namespace Word_Scramble
             failedAttempts.Clear();
             revealedHintLetters = 0;
 
+            CancelActiveHintTimer();
+
             if (this.labelHintDisplay != null)
             {
                 this.labelHintDisplay.Text = string.Empty;
@@ -147,13 +155,12 @@ namespace Word_Scramble
             return new string(chars);
         }
 
-        private async void CheckTheWord()
+        private async Task CheckTheWord()
         {
             string input = this.textBoxInput.Text.Trim();
 
             if (string.Equals(currentWord, input, StringComparison.OrdinalIgnoreCase))
             {
-
                 guessedWords++;
                 this.labelGuessedWordsValue.Text = guessedWords.ToString();
 
@@ -163,7 +170,16 @@ namespace Word_Scramble
                 System.Drawing.Color originalColor = this.BackColor;
                 this.BackColor = System.Drawing.Color.LightGreen;
 
-                await Task.Delay(250);
+                if (guessedWords > 0 && guessedWords % 10 == 0)
+                {
+                    currentLevel++;
+                    this.labelLevelDisplay.Text = $"Ниво: {currentLevel}";
+                    await Task.Delay(1000);
+                }
+                else
+                {
+                    await Task.Delay(350);
+                }
 
                 this.BackColor = originalColor;
             }
@@ -174,9 +190,48 @@ namespace Word_Scramble
 
                 if (attempts > 9)
                 {
-                    MessageBox.Show($"Изчерпа всички опити! Правилната дума беше: {currentWord.ToUpper()}", "Край на играта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    string revealText = $"Думата беше: {currentWord.ToUpper()}";
+
                     GenerateNewWord();
+                    UpdateLabels();
+
+                    System.Drawing.Color originalColor = this.BackColor;
+                    this.BackColor = System.Drawing.Color.LightCoral;
+
+                    this.labelHintDisplay.Text = revealText;
+
+                    hintTimerCts = new CancellationTokenSource();
+                    CancellationToken token = hintTimerCts.Token;
+
+                    Task flashTask = Task.Delay(450);
+                    Task revealClearTask = ClearHintAfterDelayAsync(5000, token);
+
+                    await flashTask;
+                    this.BackColor = originalColor;
+                    await revealClearTask;
                 }
+            }
+        }
+
+        private async Task ClearHintAfterDelayAsync(int millisecondsDelay, CancellationToken token)
+        {
+            try
+            {
+                await Task.Delay(millisecondsDelay, token);
+                this.labelHintDisplay.Text = string.Empty;
+            }
+            catch (TaskCanceledException)
+            {
+            }
+        }
+
+        private void CancelActiveHintTimer()
+        {
+            if (hintTimerCts != null)
+            {
+                hintTimerCts.Cancel();
+                hintTimerCts.Dispose();
+                hintTimerCts = null;
             }
         }
 
@@ -192,6 +247,10 @@ namespace Word_Scramble
         }
 
         private void textBoxInput_TextChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
         {
         }
     }
