@@ -97,7 +97,6 @@
             labelScrambledWord.Size = new Size(235, 35);
             labelScrambledWord.TabIndex = 0;
             labelScrambledWord.Text = "scrambled word";
-            labelScrambledWord.Click += this.labelScrambledWord_Click;
             // 
             // textBoxInput
             // 
